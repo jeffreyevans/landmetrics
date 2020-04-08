@@ -1,6 +1,35 @@
 # landmetrics 0.1-0
 Legacy landscape metrics
 
+Please note that this package is for analytical continuity for those that previously 
+derived landscape metrics in spatialEco. For domain consistency, please use the 
+landscpaemetrics package (https://r-spatialecology.github.io/landscapemetrics/) 
+This is a drop in replacement for FRAGSTATS and consistent in methodology and 
+results. 
+
+# Here are worked examples for the landscapemetrics package
+
+library(landscapemetrics)
+library(raster)
+  data(landscape)
+
+# To replicate the land.metrics function 
+
+points <- matrix(c(10, 5, 25, 15, 5, 25), 
+                 ncol = 2, byrow = TRUE)
+
+sample_lsm(landscape, y = points, size = 10, 
+           level = "landscape", type = "diversity metric", 
+           classes_max = 3,
+           verbose = FALSE)   
+
+# and, for focal.lmetrics
+
+s <- matrix(1, nrow = 3, ncol = 3)
+( result <- do.call(stack, window_lsm(landscape, window = s, 
+                  what = c("lsm_l_pr", "lsm_l_joinent"))) )
+  plot(result)
+
 landmetrics R package with utilities to support analysis of landscpae pattern
   legacy functions and C++ code from the spatialEco package
     
