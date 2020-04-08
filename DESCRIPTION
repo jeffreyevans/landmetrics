@@ -1,0 +1,27 @@
+Package: landmetrics
+Type: Package
+Title: Legacy landscape metrics from spatialEco
+Version: 0.1-0
+Date: 2020-04-07
+Authors@R: c(person(family="Evans", given="Jeffrey S.", email = "jeffrey_evans@tnc.org",
+             role = c("aut", "cre")))
+Description: Legacy functions and C++ code for landscape metrics functions from 
+ spatialEco package. Includes focal and area metrics.
+Depends: R (>= 3.6.0)
+Imports: 
+  dplyr, 
+  raster,
+  sp, 
+  sf, 
+  spdep,
+  readr,
+  rgeos
+Maintainer: Jeffrey S. Evans <jeffrey_evans@tnc.org>
+License: GPL-3
+URL: https://github.com/jeffreyevans/landmetrics
+NeedsCompilation: yes
+LazyData: true
+Encoding: UTF-8
+RoxygenNote: 7.1.0
+Packaged: 2020-01-16 19:33:03 UTC; jeffrey_evans
+Author: Jeffrey S. Evans [aut, cre]
