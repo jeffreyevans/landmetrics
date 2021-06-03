@@ -156,7 +156,7 @@ land.metrics <- function(x, y, bkgd = NA, metrics = c("prop.landscape"), bw = 10
         if(rtype == "RasterLayer") {	
 		  lr <- raster::mask(raster::crop(y, f), f)
 	    } else if(rtype == "SpatRaster") {
-		  lr <- terra::mask(terra::crop(y, terra::vect(f)), terra::vect(f))
+		  lr <- raster(terra::mask(terra::crop(y, terra::vect(f)), terra::vect(f)))
        }	   
       LM <- ClassStat(lr, cellsize = raster::res(lr)[1], bkgd = bkgd, 
 	                  latlon = latlon)[m.idx]

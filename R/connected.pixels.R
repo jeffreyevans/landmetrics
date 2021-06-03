@@ -50,6 +50,9 @@ connected.pixels <- function(mat)	{
 	} else if (any(class(mat) %in% 'RasterLayer')) {
 	  attrib = mat
 	  mat = asc.from.raster(mat)
+	} else if (any(class(mat) %in% 'SpatRaster')) {
+	  attrib = mat
+	  mat = asc.from.terra(mat)	  
 	} else if (any(class(mat) == 'SpatialGridDataFrame')) {
 	  attrib = mat
 	  mat = asc.from.sp(mat)
