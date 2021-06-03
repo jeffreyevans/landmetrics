@@ -52,5 +52,5 @@ Chang, F., C.J. Chen, and C.J. Lu. 2004. A linear-time component-labeling algori
 using contour tracing technique. Comput. Vis. Image Underst. 93:206-220.
 }
 \author{
-Jeremy VanDerWal (code from depreciated/orphaned SDMTools package)
+Jeremy VanDerWal (depreciated/orphaned SDMTools package) and Jeffrey S. Evans
 }

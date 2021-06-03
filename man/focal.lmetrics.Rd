@@ -76,19 +76,20 @@ The following metrics are available:
  }
 }
 \examples{
-\dontrun{
+#' \dontrun{
  library(raster)
+ library(terra)
  library(sp)
 
  r <- raster(nrows=180, ncols=360, xmn=571823.6, xmx=616763.6, ymn=4423540, 
              ymx=4453690, resolution=270, crs = CRS("+proj=utm +zone=12 +datum=NAD83 
              +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"))
-
- r[] <- rpois(ncell(r), lambda=1)
- r <- calc(r, fun=function(x) { x[x >= 1] <- 1; return(x) } )  
-
-# proportion landscape class   
-pland <- focal.lmetrics(r, w=11)
+r[] <- sample(c(0,1), ncell(r), replace=TRUE) 		  
+    
+# proportion landscape class (benchmark raster and terra)
+  system.time({ pland <- focal.lmetrics(r, w=5) })
+  r <- rast(r)
+  system.time({ pland <- focal.lmetrics(r, w=5) })   
   plot(pland)
 
 # Aggregation index 

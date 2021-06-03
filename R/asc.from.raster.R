@@ -1,6 +1,6 @@
-#' @title Raster conversion functions for adehabitat, raster and sp packages
+#' @title Raster conversion functions for adehabitat, raster, terra and sp packages
 #'
-#' @param x          is an object of class 'asc', 'RasterLayer' or
+#' @param x          is an object of class 'asc', 'RasterLayer' 'SpatRast', or
 #'                   'SpatialGridDataFrame'. For the function as.asc, a matrix
 #' @param projs      is a CRS projection string of the Proj4 package
 #' @param xll        the x coordinate of the center of the lower left pixel of the map
@@ -19,14 +19,14 @@
 #' class 'RasterLayer' (raster package) and class 'SpatialGridDataFrame' 
 #' (sp package) into an object of class 'asc' (adehabitat packages). 
 #' raster.from.asc and sp.from.asc does the reverse.
-#' as.asc creates an object of class 'asc' (SDMTools & adehabitat
+#' as.asc creates an object of class 'asc' (adehabitat
 #' packages) from a matrix of data. Code and helpfile associated with
 #' as.asc were modified from adehabitat package.
 #' 
 #' These functions provide capabilities of using functions from many
 #' packages including adehabitat, sp (plus e.g., maptools, rgdal) and raster.
 #' 
-#' @author Jeremy VanDerWal (code from depreciated/orphaned SDMTools package)
+#' @author Jeremy VanDerWal (depreciated/orphaned SDMTools package) and Jeffrey S. Evans
 #'
 #' @examples 
 #' library(sp)
@@ -48,7 +48,7 @@
 #' #create a basic object of class asc
 #' ( tasc = as.asc(matrix(rep(x=1:10, times=1000),nr=100)) )
 #' 
-# @import raster, sp
+# @import raster, sp, terra
 #' @export 
 asc.from.raster <- function(x) {
 	if (!any(class(x) %in% 'RasterLayer')) stop('x must be of class raster or RasterLayer')
@@ -58,6 +58,21 @@ asc.from.raster <- function(x) {
 	tmat = t(matrix(raster::getValues(x),nrow=x@nrows,ncol=x@ncols,byrow=T)[x@nrows:1,])
 	tmat[which(tmat==x@file@nodatavalue)] = NA
 	return(as.asc(tmat,yll=yll,xll=xll,cellsize=cellsize))
+}
+
+#' @rdname asc.from.terra
+#' @export
+asc.from.terra <- function(x) {
+  if (!any(class(x) %in% 'SpatRaster')) 
+    stop('x must be of class SpatRaster')
+  e <- terra::ext(x) # xmin, xmax, ymin, ymax
+  cellsize = (e[4] - e[3]) / terra::nrow(x)
+	yll = e[3] + 0.5 * cellsize
+	xll = e[1] + 0.5 * cellsize
+	tmat = t(matrix(terra::values(x), nrow=terra::nrow(x), 
+	         ncol=terra::ncol(x), byrow=TRUE)[terra::nrow(x):1,])
+    tmat[which(!is.numeric(tmat))] <- NA
+  return(as.asc(tmat, yll=yll, xll=xll, cellsize=cellsize))
 }
 
 #' @rdname asc.from.raster

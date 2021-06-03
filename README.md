@@ -1,10 +1,11 @@
-# landmetrics 0.1-0
+# landmetrics 0.1-1
 Legacy landscape metrics
 
 landmetrics R package with utilities to support analysis of landscpae pattern
-legacy functions and C++ code from the spatialEco package
+legacy functions and C++ code from the spatialEco package. At this version, 
+added support for terra raster class in focal.lmetrics 
  
-# Available functions in landmetrics 0.1-0 are:
+# Available functions in landmetrics 0.1-1 are:
 
 focal.lmetrics - Landscape metrics using a focal window
 

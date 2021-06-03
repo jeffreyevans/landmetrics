@@ -17,7 +17,7 @@
 #' (adehabitat package), 'RasterLayer' (raster package) or
 #' 'SpatialGridDataFrame' (sp package).
 #'
-#' @author Jeremy VanDerWal (code from depreciated/orphaned SDMTools package)
+#' @author Jeremy VanDerWal (depreciated/orphaned SDMTools package) and Jeffrey S. Evans
 #'
 #' @references 
 #' Chang, F., C.J. Chen, and C.J. Lu. 2004. A linear-time component-labeling algorithm 

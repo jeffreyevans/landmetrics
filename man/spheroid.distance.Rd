@@ -42,7 +42,7 @@ Estimates the distance on a sphere using lat and long coordinates
 }
 \note{
 The spheroid.distance estimates the distance given a starting and ending latitude
-and longitude. Vincenty's approach, is described as: Vincenty's formulae
+and longitude. Vincenty's approach, is described as: Vincenty's formula
 are two related iterative methods used in geodesy to calculate the distance
 between two points on the surface of an spheroid.
 They are based on the assumption that the figure of the Earth is an oblate spheroid,
@@ -59,5 +59,5 @@ the Ellipsoid with application of Nested Equations. Survey Review, vol XXII
 no 176.
 }
 \author{
-Jeremy VanDerWal (code from depreciated/orphaned SDMTools package)
+Jeremy VanDerWal (depreciated/orphaned SDMTools package) and Jeffrey S. Evans
 }

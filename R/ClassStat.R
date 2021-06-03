@@ -85,7 +85,7 @@
 #' packages), "RasterLayer" (raster package) or "SpatialGridDataFrame" (sp
 #' package). The class statistics are based on statistics calculated by fragstats
 #'
-#' @author Jeremy VanDerWal (code from depreciated/orphaned SDMTools package)
+#' @author Jeremy VanDerWal (depreciated/orphaned SDMTools package) and Jeffrey S. Evans
 #'
 #' @references McGarigal, K., S. A. Cushman, M. C. Neel, and E. Ene. 2002.
 #' FRAGSTATS: Spatial Pattern Analysis Program for Categorical Maps. Computer

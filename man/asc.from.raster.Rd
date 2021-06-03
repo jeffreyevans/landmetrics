@@ -6,7 +6,7 @@
 \alias{asc.from.sp}
 \alias{sp.from.asc}
 \alias{as.asc}
-\title{Raster conversion functions for adehabitat, raster and sp packages}
+\title{Raster conversion functions for adehabitat, raster, terra and sp packages}
 \usage{
 asc.from.raster(x)
 
@@ -26,7 +26,7 @@ as.asc(
 )
 }
 \arguments{
-\item{x}{is an object of class 'asc', 'RasterLayer' or
+\item{x}{is an object of class 'asc', 'RasterLayer' 'SpatRast', or
 'SpatialGridDataFrame'. For the function as.asc, a matrix}
 
 \item{projs}{is a CRS projection string of the Proj4 package}
@@ -48,14 +48,14 @@ helpfile details}
 Returns an object of class requested.
 }
 \description{
-Raster conversion functions for adehabitat, raster and sp packages
+Raster conversion functions for adehabitat, raster, terra and sp packages
 }
 \note{
 asc.from.raster and asc.from.sp extracts data from objects of
 class 'RasterLayer' (raster package) and class 'SpatialGridDataFrame' 
 (sp package) into an object of class 'asc' (adehabitat packages). 
 raster.from.asc and sp.from.asc does the reverse.
-as.asc creates an object of class 'asc' (SDMTools & adehabitat
+as.asc creates an object of class 'asc' (adehabitat
 packages) from a matrix of data. Code and helpfile associated with
 as.asc were modified from adehabitat package.
 
@@ -84,5 +84,5 @@ str(tgrid)
 
 }
 \author{
-Jeremy VanDerWal (code from depreciated/orphaned SDMTools package)
+Jeremy VanDerWal (depreciated/orphaned SDMTools package) and Jeffrey S. Evans
 }

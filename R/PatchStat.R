@@ -39,7 +39,7 @@
 #' (adehabitat package), 'RasterLayer' (raster package) or
 #' 'SpatialGridDataFrame' (sp package).
 #'      
-#' @author Jeremy VanDerWal (code from depreciated/orphaned SDMTools package)
+#' @author Jeremy VanDerWal (depreciated/orphaned SDMTools package) and Jeffrey S. Evans
 #'
 #' @references 
 #' McGarigal, K., S. A. Cushman, M. C. Neel, and E. Ene. (2002).
@@ -75,6 +75,7 @@ PatchStat <- function(mat, cellsize = 1, latlon = FALSE) {
   getXYcoords <- function(w) {
 	if (any(class(w) %in% 'RasterLayer')) w = asc.from.raster(w)
 	if (any(class(w) == 'SpatialGridDataFrame')) w = asc.from.sp(w)
+	if (any(class(w) == 'SpatRaster')) w = asc.from.terra(w)	
     if (!inherits(w, "asc")) stop("must be of class asc")
     cs <- attr(w, "cellsize")
       xll <- attr(w, "xll")
@@ -98,10 +99,11 @@ PatchStat <- function(mat, cellsize = 1, latlon = FALSE) {
 	}
 	if (any(class(mat) %in% 'RasterLayer')) mat = asc.from.raster(mat)
 	if (any(class(mat) == 'SpatialGridDataFrame')) mat = asc.from.sp(mat)
+	if (any(class(mat) == 'SpatRaster')) mat = asc.from.terra(mat)	
 	if (latlon){
 		if (!any(class(mat) == 'asc')) 
 		  stop('matrix must be of class asc, RasterLayer or SpatialGridDataFrame... see helpfile')
-		cellinfo = grid.info(getXYcoords(mat)$y,attr(mat,'cellsize'))
+		cellinfo = grid.info(getXYcoords(mat)$y, attr(mat,'cellsize'))
 		mat = try(as.matrix(mat))
 		ID.vals = as.numeric(stats::na.omit(unique(as.vector(mat))))
 		ID.vals = ID.vals[order(ID.vals)]

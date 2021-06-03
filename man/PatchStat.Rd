@@ -83,5 +83,5 @@ software program produced by the authors at the University of Massachusetts,
 Amherst.
 }
 \author{
-Jeremy VanDerWal (code from depreciated/orphaned SDMTools package)
+Jeremy VanDerWal (depreciated/orphaned SDMTools package) and Jeffrey S. Evans
 }

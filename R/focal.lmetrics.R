@@ -55,19 +55,20 @@
 #' @author Jeffrey S. Evans  <jeffrey_evans@@tnc.org>
 #'
 #' @examples
-#' \dontrun{
+#'#' \dontrun{
 #'  library(raster)
+#'  library(terra)
 #'  library(sp)
 #'
 #'  r <- raster(nrows=180, ncols=360, xmn=571823.6, xmx=616763.6, ymn=4423540, 
 #'              ymx=4453690, resolution=270, crs = CRS("+proj=utm +zone=12 +datum=NAD83 
 #'              +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"))
-#'
-#'  r[] <- rpois(ncell(r), lambda=1)
-#'  r <- calc(r, fun=function(x) { x[x >= 1] <- 1; return(x) } )  
-#' 
-#' # proportion landscape class   
-#' pland <- focal.lmetrics(r, w=11)
+#'	r[] <- sample(c(0,1), ncell(r), replace=TRUE) 		  
+#'     
+#' # proportion landscape class (benchmark raster and terra)
+#'   system.time({ pland <- focal.lmetrics(r, w=5) })
+#'   r <- rast(r)
+#'   system.time({ pland <- focal.lmetrics(r, w=5) })   
 #'   plot(pland)
 #'
 #' # Aggregation index 
@@ -80,8 +81,10 @@
 #' @export 
 focal.lmetrics <- function(x, w = 5, bkg = 0, land.value = 1, 
                            metric = "prop.landscape", latlong = FALSE) {
-  if( class(x) != "RasterLayer" ) stop( "x is not a valid raster layer")
-    if( length(w) <= 1) { window.size = c(w,w) } else { window.size = c(w[1],w[2]) }    					  
+  if(!any(class(x) == c("RasterLayer", "SpatRaster"))) 
+    stop( "x is not a valid raster layer")
+  if( length(w) <= 1) { window.size = c(w,w) } else { window.size = c(w[1],w[2]) }
+    w = matrix(1,window.size[1], ncol = window.size[2])  
     mnames <- c("class","n.patches","total.area",             
         "prop.landscape","patch.density","total.edge",             
         "edge.density","landscape.shape.index","largest.patch.index",    
@@ -97,7 +100,11 @@ focal.lmetrics <- function(x, w = 5, bkg = 0, land.value = 1,
         "effective.mesh.size","patch.cohesion.index")						  
   m.idx <- which( mnames %in% metric )
     if( length(m.idx) < 1 ) stop("Not a valid landscape metric")
+    if(class(x) == "RasterLayer") {
       cs = raster::res(x)[1] 
+    } else if(class(x) == "SpatRaster") {
+      cs = terra::res(x)[1]
+    }
   lmetric <- function(v, ws = window.size, focal.values = land.value, bkgs = bkg, 
                       rcs = cs, latlongs = latlong, lm.idx = m.idx) {
     m <- matrix(v, nrow = window.size[1], ncol = window.size[2], byrow = TRUE)
@@ -105,5 +112,9 @@ focal.lmetrics <- function(x, w = 5, bkg = 0, land.value = 1,
     return( as.numeric(ClassStat(m, bkgd = bkgs, cellsize = rcs, 
 	        latlon = latlongs))[lm.idx] )
   } 
-  return( raster::focal(x, w = matrix(1,window.size[1], ncol = window.size[2]), fun=lmetric) )  
+  if(class(x) == "RasterLayer") {
+    return( raster::focal(x, w = w, fun=lmetric) )
+  } else if(class(x) == "SpatRaster") {
+    return( terra::focal(x, w = w, fun=lmetric, na.rm=FALSE) )	
+  } 
 }

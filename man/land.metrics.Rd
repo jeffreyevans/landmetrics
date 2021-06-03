@@ -11,7 +11,7 @@ land.metrics(
   metrics = c("prop.landscape"),
   bw = 1000,
   latlon = FALSE,
-  echo = TRUE
+  echo = FALSE
 )
 }
 \arguments{
@@ -111,14 +111,14 @@ It is critical to note that if using polygon units that, the resulting metric re
 }
 \examples{
  library(raster)
+ library(terra)
  library(sp)
 
  r <- raster(nrows=180, ncols=360, xmn=571823.6, xmx=616763.6, ymn=4423540, 
              ymx=4453690, resolution=270, crs = CRS("+proj=utm +zone=12 +datum=NAD83 
              +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"))
 
- r[] <- rpois(ncell(r), lambda=1)
- r <- calc(r, fun=function(x) { x[x >= 1] <- 1; return(x) } )  
+   r[] <- sample(c(0,1), ncell(r), replace=TRUE)
  x <- sampleRandom(r, 10, na.rm = TRUE, sp = TRUE)
 
  lmet <- c("prop.landscape", "edge.density", "prop.like.adjacencies", "aggregation.index") 

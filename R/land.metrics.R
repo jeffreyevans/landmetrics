@@ -87,14 +87,14 @@
 #'
 #' @examples 
 #'  library(raster)
+#'  library(terra)
 #'  library(sp)
 #'
 #'  r <- raster(nrows=180, ncols=360, xmn=571823.6, xmx=616763.6, ymn=4423540, 
 #'              ymx=4453690, resolution=270, crs = CRS("+proj=utm +zone=12 +datum=NAD83 
 #'              +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"))
 #'
-#'  r[] <- rpois(ncell(r), lambda=1)
-#'  r <- calc(r, fun=function(x) { x[x >= 1] <- 1; return(x) } )  
+#'    r[] <- sample(c(0,1), ncell(r), replace=TRUE)
 #'  x <- sampleRandom(r, 10, na.rm = TRUE, sp = TRUE)
 #'
 #'  lmet <- c("prop.landscape", "edge.density", "prop.like.adjacencies", "aggregation.index") 
@@ -108,52 +108,58 @@
 #'
 #' @export 
 land.metrics <- function(x, y, bkgd = NA, metrics = c("prop.landscape"), bw = 1000, 
-                         latlon = FALSE, echo = TRUE) {
-    # if(class(x) == "sf") { x <- as(x, "Spatial") }
-    if (!inherits(x, "SpatialPointsDataFrame") & !inherits(x, "SpatialPolygonsDataFrame")) 
-        stop("MUST BE sp SpatialPointsDataFrame OR SpatialPolygonsDataFrame CLASS OBJECT")
-    if (!inherits(y, "RasterLayer")) 
-        stop("MUST BE raster CLASS OBJECT")
+                         latlon = FALSE, echo = FALSE) {
+  sp.types = paste0("Spatial", c("Points","Polygons"), "DataFrame")
+  if(!any(class(x)[1] == c(sp.types, "sf"))) {
+    stop("x is not a suitable feature object class") 
+  }  
+  if(any(class(x)[1] == c("sfc", "sfg"))) { 
+    x <- sf::st_sf(x) 
+  }  
+  if(any(class(x)[1] == sp.types)) { 
+    x <- sf::st_as_sf(x) 
+  } 
+  if(length(unique(as.character(st_geometry_type(x)))) > 1) 
+    stop("x is a GEOMETRYCOLLECTION but needs to represent a single geometry type") 
+  g <- unique(unique(as.character(sf::st_geometry_type(x))))	
+  if(any(g ==  c("MULTIPOLYGON", "MULTIPOINT")))
+    stop("x appears to have multipart geometry and will not produce valid results") 
+  rtype = class(y)[1]
+  if(!any(rtype == c("RasterLayer", "SpatRaster")))
+    stop("y must be a RasterLayer or SpatRaster class object")
     mnames <- c("class", "n.patches", "total.area", "prop.landscape", "patch.density", "total.edge", "edge.density",
         "landscape.shape.index", "largest.patch.index", "mean.patch.area", "sd.patch.area", "min.patch.area", "max.patch.area",
         "perimeter.area.frac.dim", "mean.perim.area.ratio", "sd.perim.area.ratio", "min.perim.area.ratio", "max.perim.area.ratio",
         "mean.shape.index", "sd.shape.index", "min.shape.index", "max.shape.index", "mean.frac.dim.index", "sd.frac.dim.index",
         "min.frac.dim.index", "max.frac.dim.index", "total.core.area", "prop.landscape.core", "mean.patch.core.area",
         "sd.patch.core.area", "min.patch.core.area", "max.patch.core.area", "prop.like.adjacencies", "aggregation.index",
-        "landscape.division.index", "splitting.index", "effective.mesh.size", "patch.cohesion.index")
-			
+        "landscape.division.index", "splitting.index", "effective.mesh.size", "patch.cohesion.index")			
 	  if(is.numeric(metrics)) { metrics <- mnames[metrics] }
 	    metrics <- unique(c("class", metrics))	
           m.idx <- unique(which( mnames %in% metrics))
 	         if(!length(m.idx) == length(metrics)) 
 	            stop("Non-valid metrics specified") 
-		  
-	u <- raster::unique(y)
-	  if(bkgd %in% u) { u <- u[-which(u == bkgd)] }
+	u <- as.vector(raster::unique(y))
+	  if(bkgd %in% u) { u <- u[-which(u == bkgd)] }	  
 	results <- list()
 	  for(i in 1:length(u)) { 
 	    results[[i]] <- as.data.frame(array(0, dim=c(nrow(x), length(metrics))))
           names(results[[i]]) <- mnames[m.idx]
       }
-	names(results) <- u
-	
+	names(results) <- u	
 	for (j in 1:nrow(x) ) {
       if (echo == TRUE) cat("Processing observation -", j, "\n")
-      lsub <- x[j,]
-        if (class(lsub) == "SpatialPointsDataFrame") {
-            f <- rgeos::gBuffer(lsub, width = bw, joinStyle = "ROUND", quadsegs = 10)
-			fext <- methods::as(raster::extent(f), "SpatialPolygons") 
-            cr <- raster::crop(y, fext, snap = "out")
-            crop.NA <- raster::setValues(cr, NA)
-            fr <- raster::rasterize(f, cr)
-            lr <- raster::mask(x = cr, mask = fr)
-        } else if (class(lsub) == "SpatialPolygonsDataFrame") { 
-            cr <- raster::crop(y, raster::extent(lsub), snap = "out")
-            crop.NA <- raster::setValues(cr, NA)
-            fr <- raster::rasterize(lsub, cr)
-            lr <- raster::mask(x = cr, mask = fr)
-        }
-      LM <- ClassStat(lr, cellsize = raster::res(cr)[1], bkgd = bkgd, latlon = latlon)[m.idx]
+      f <- x[j,]  
+        if (g == "POINT") {
+            f <- sf::st_buffer(f, dist = bw)
+        } 
+        if(rtype == "RasterLayer") {	
+		  lr <- raster::mask(raster::crop(y, f), f)
+	    } else if(rtype == "SpatRaster") {
+		  lr <- terra::mask(terra::crop(y, terra::vect(f)), terra::vect(f))
+       }	   
+      LM <- ClassStat(lr, cellsize = raster::res(lr)[1], bkgd = bkgd, 
+	                  latlon = latlon)[m.idx]
         if (is.null(LM)) {
 		  LM <- as.data.frame(array(0, dim=c( length(u), length(metrics))))
 		    LM[] <- NA
@@ -162,12 +168,11 @@ land.metrics <- function(x, y, bkgd = NA, metrics = c("prop.landscape"), bw = 10
         }
  	for( n in names(results) ) {
       lm.class <- LM[which(LM$class == n),]
-	    if(nrow(lm.class) == 0) { lm.class <- c(n, rep(NA, ncol(lm.class)-1)) }		  
+	    if(nrow(lm.class) == 0) { lm.class <- c(n, rep(NA, ncol(lm.class)-1)) }
 	      results[[n]][j,] <- lm.class
-            row.names(results[[n]])[j] <- row.names(lsub@data)
+            row.names(results[[n]])[j] <- row.names(f)
      }
-   }
-   
+   }   
   if ( length(results) == 1 ) {
     return(results[[1]]) 
   } else {
