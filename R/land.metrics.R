@@ -119,7 +119,7 @@ land.metrics <- function(x, y, bkgd = NA, metrics = c("prop.landscape"), bw = 10
   if(any(class(x)[1] == sp.types)) { 
     x <- sf::st_as_sf(x) 
   } 
-  if(length(unique(as.character(st_geometry_type(x)))) > 1) 
+  if(length(unique(as.character(sf::st_geometry_type(x)))) > 1) 
     stop("x is a GEOMETRYCOLLECTION but needs to represent a single geometry type") 
   g <- unique(unique(as.character(sf::st_geometry_type(x))))	
   if(any(g ==  c("MULTIPOLYGON", "MULTIPOINT")))
