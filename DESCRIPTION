@@ -3,8 +3,9 @@ Type: Package
 Title: Legacy landscape metrics from spatialEco
 Version: 0.1-1
 Date: 2021-06-03
-Authors@R: c(person(family="Evans", given="Jeffrey S.", email = "jeffrey_evans@tnc.org",
-             role = c("aut", "cre")))
+Authors@R: c(person(family="Evans", given="Jeffrey S.", email = "jeffrey_evans@tnc.org", 
+             role = c("aut", "cre")),
+             person(family="VanDerWal", given="Jeremy", role = c("aut", "cre")))
 Description: Legacy functions and C++ code for landscape metrics functions from 
  spatialEco package. Includes focal and area metrics.
 Depends: R (>= 3.6.0)
@@ -26,3 +27,4 @@ Encoding: UTF-8
 RoxygenNote: 7.1.1
 Packaged: 2020-01-16 19:33:03 UTC; jeffrey_evans
 Author: Jeffrey S. Evans [aut, cre]
+
