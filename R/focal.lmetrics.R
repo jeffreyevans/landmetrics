@@ -107,10 +107,12 @@ focal.lmetrics <- function(x, w = 5, bkg = 0, land.value = 1,
     }
   lmetric <- function(v, ws = window.size, focal.values = land.value, bkgs = bkg, 
                       rcs = cs, latlongs = latlong, lm.idx = m.idx) {
-    m <- matrix(v, nrow = window.size[1], ncol = window.size[2], byrow = TRUE)
-      m <- ifelse(m != focal.values, bkgs, 1)	
+	if(class(v)[1] != "matrix") {
+      m <- matrix(v, nrow = window.size[1], ncol = window.size[2], byrow = TRUE)
+	}
+    m <- ifelse(m != focal.values, bkgs, 1)	
     return( as.numeric(ClassStat(m, bkgd = bkgs, cellsize = rcs, 
-	        latlon = latlongs))[lm.idx] )
+	                   latlon = latlongs))[lm.idx] )
   } 
   if(class(x) == "RasterLayer") {
     return( raster::focal(x, w = w, fun=lmetric) )
